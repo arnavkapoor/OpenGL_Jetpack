@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/jetpac_v1.dir/src/other_handlers.cpp.o"
-  "CMakeFiles/jetpac_v1.dir/src/ball.cpp.o"
+  "CMakeFiles/jetpac_v1.dir/src/player.cpp.o"
   "CMakeFiles/jetpac_v1.dir/src/timer.cpp.o"
   "CMakeFiles/jetpac_v1.dir/src/color.cpp.o"
   "CMakeFiles/jetpac_v1.dir/src/input.cpp.o"

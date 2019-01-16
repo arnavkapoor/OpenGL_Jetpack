@@ -6,12 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/ball.cpp
-ball.h
-/home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/ball.h
-main.h
-/home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/main.h
-
 /home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/ball.h
 main.h
 /home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/main.h
@@ -109,6 +103,12 @@ glm/gtx/transform.hpp
 -
 glm/gtc/matrix_transform.hpp
 -
+main.h
+/home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/main.h
+
+/home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/player.cpp
+ball.h
+/home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/ball.h
 main.h
 /home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/main.h
 

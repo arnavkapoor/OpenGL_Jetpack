@@ -81,28 +81,28 @@ CMakeFiles/jetpac_v1.dir/src/other_handlers.cpp.o.provides: CMakeFiles/jetpac_v1
 CMakeFiles/jetpac_v1.dir/src/other_handlers.cpp.o.provides.build: CMakeFiles/jetpac_v1.dir/src/other_handlers.cpp.o
 
 
-CMakeFiles/jetpac_v1.dir/src/ball.cpp.o: CMakeFiles/jetpac_v1.dir/flags.make
-CMakeFiles/jetpac_v1.dir/src/ball.cpp.o: ../src/ball.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/jetpac_v1.dir/src/ball.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/jetpac_v1.dir/src/ball.cpp.o -c /home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/ball.cpp
+CMakeFiles/jetpac_v1.dir/src/player.cpp.o: CMakeFiles/jetpac_v1.dir/flags.make
+CMakeFiles/jetpac_v1.dir/src/player.cpp.o: ../src/player.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/jetpac_v1.dir/src/player.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/jetpac_v1.dir/src/player.cpp.o -c /home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/player.cpp
 
-CMakeFiles/jetpac_v1.dir/src/ball.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/jetpac_v1.dir/src/ball.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/ball.cpp > CMakeFiles/jetpac_v1.dir/src/ball.cpp.i
+CMakeFiles/jetpac_v1.dir/src/player.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/jetpac_v1.dir/src/player.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/player.cpp > CMakeFiles/jetpac_v1.dir/src/player.cpp.i
 
-CMakeFiles/jetpac_v1.dir/src/ball.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/jetpac_v1.dir/src/ball.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/ball.cpp -o CMakeFiles/jetpac_v1.dir/src/ball.cpp.s
+CMakeFiles/jetpac_v1.dir/src/player.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/jetpac_v1.dir/src/player.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/arnav/Courses2-2/Graphics/OpenGL_Jetpack/jetpack/src/player.cpp -o CMakeFiles/jetpac_v1.dir/src/player.cpp.s
 
-CMakeFiles/jetpac_v1.dir/src/ball.cpp.o.requires:
+CMakeFiles/jetpac_v1.dir/src/player.cpp.o.requires:
 
-.PHONY : CMakeFiles/jetpac_v1.dir/src/ball.cpp.o.requires
+.PHONY : CMakeFiles/jetpac_v1.dir/src/player.cpp.o.requires
 
-CMakeFiles/jetpac_v1.dir/src/ball.cpp.o.provides: CMakeFiles/jetpac_v1.dir/src/ball.cpp.o.requires
-	$(MAKE) -f CMakeFiles/jetpac_v1.dir/build.make CMakeFiles/jetpac_v1.dir/src/ball.cpp.o.provides.build
-.PHONY : CMakeFiles/jetpac_v1.dir/src/ball.cpp.o.provides
+CMakeFiles/jetpac_v1.dir/src/player.cpp.o.provides: CMakeFiles/jetpac_v1.dir/src/player.cpp.o.requires
+	$(MAKE) -f CMakeFiles/jetpac_v1.dir/build.make CMakeFiles/jetpac_v1.dir/src/player.cpp.o.provides.build
+.PHONY : CMakeFiles/jetpac_v1.dir/src/player.cpp.o.provides
 
-CMakeFiles/jetpac_v1.dir/src/ball.cpp.o.provides.build: CMakeFiles/jetpac_v1.dir/src/ball.cpp.o
+CMakeFiles/jetpac_v1.dir/src/player.cpp.o.provides.build: CMakeFiles/jetpac_v1.dir/src/player.cpp.o
 
 
 CMakeFiles/jetpac_v1.dir/src/timer.cpp.o: CMakeFiles/jetpac_v1.dir/flags.make
@@ -228,7 +228,7 @@ CMakeFiles/jetpac_v1.dir/src/main.cpp.o.provides.build: CMakeFiles/jetpac_v1.dir
 # Object files for target jetpac_v1
 jetpac_v1_OBJECTS = \
 "CMakeFiles/jetpac_v1.dir/src/other_handlers.cpp.o" \
-"CMakeFiles/jetpac_v1.dir/src/ball.cpp.o" \
+"CMakeFiles/jetpac_v1.dir/src/player.cpp.o" \
 "CMakeFiles/jetpac_v1.dir/src/timer.cpp.o" \
 "CMakeFiles/jetpac_v1.dir/src/color.cpp.o" \
 "CMakeFiles/jetpac_v1.dir/src/input.cpp.o" \
@@ -239,7 +239,7 @@ jetpac_v1_OBJECTS = \
 jetpac_v1_EXTERNAL_OBJECTS =
 
 jetpac_v1: CMakeFiles/jetpac_v1.dir/src/other_handlers.cpp.o
-jetpac_v1: CMakeFiles/jetpac_v1.dir/src/ball.cpp.o
+jetpac_v1: CMakeFiles/jetpac_v1.dir/src/player.cpp.o
 jetpac_v1: CMakeFiles/jetpac_v1.dir/src/timer.cpp.o
 jetpac_v1: CMakeFiles/jetpac_v1.dir/src/color.cpp.o
 jetpac_v1: CMakeFiles/jetpac_v1.dir/src/input.cpp.o
@@ -256,7 +256,7 @@ CMakeFiles/jetpac_v1.dir/build: jetpac_v1
 .PHONY : CMakeFiles/jetpac_v1.dir/build
 
 CMakeFiles/jetpac_v1.dir/requires: CMakeFiles/jetpac_v1.dir/src/other_handlers.cpp.o.requires
-CMakeFiles/jetpac_v1.dir/requires: CMakeFiles/jetpac_v1.dir/src/ball.cpp.o.requires
+CMakeFiles/jetpac_v1.dir/requires: CMakeFiles/jetpac_v1.dir/src/player.cpp.o.requires
 CMakeFiles/jetpac_v1.dir/requires: CMakeFiles/jetpac_v1.dir/src/timer.cpp.o.requires
 CMakeFiles/jetpac_v1.dir/requires: CMakeFiles/jetpac_v1.dir/src/color.cpp.o.requires
 CMakeFiles/jetpac_v1.dir/requires: CMakeFiles/jetpac_v1.dir/src/input.cpp.o.requires

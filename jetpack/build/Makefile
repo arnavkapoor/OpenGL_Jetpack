@@ -123,33 +123,6 @@ jetpac_v1/fast:
 	$(MAKE) -f CMakeFiles/jetpac_v1.dir/build.make CMakeFiles/jetpac_v1.dir/build
 .PHONY : jetpac_v1/fast
 
-src/ball.o: src/ball.cpp.o
-
-.PHONY : src/ball.o
-
-# target to build an object file
-src/ball.cpp.o:
-	$(MAKE) -f CMakeFiles/jetpac_v1.dir/build.make CMakeFiles/jetpac_v1.dir/src/ball.cpp.o
-.PHONY : src/ball.cpp.o
-
-src/ball.i: src/ball.cpp.i
-
-.PHONY : src/ball.i
-
-# target to preprocess a source file
-src/ball.cpp.i:
-	$(MAKE) -f CMakeFiles/jetpac_v1.dir/build.make CMakeFiles/jetpac_v1.dir/src/ball.cpp.i
-.PHONY : src/ball.cpp.i
-
-src/ball.s: src/ball.cpp.s
-
-.PHONY : src/ball.s
-
-# target to generate assembly for a file
-src/ball.cpp.s:
-	$(MAKE) -f CMakeFiles/jetpac_v1.dir/build.make CMakeFiles/jetpac_v1.dir/src/ball.cpp.s
-.PHONY : src/ball.cpp.s
-
 src/color.o: src/color.cpp.o
 
 .PHONY : src/color.o
@@ -285,6 +258,33 @@ src/other_handlers.cpp.s:
 	$(MAKE) -f CMakeFiles/jetpac_v1.dir/build.make CMakeFiles/jetpac_v1.dir/src/other_handlers.cpp.s
 .PHONY : src/other_handlers.cpp.s
 
+src/player.o: src/player.cpp.o
+
+.PHONY : src/player.o
+
+# target to build an object file
+src/player.cpp.o:
+	$(MAKE) -f CMakeFiles/jetpac_v1.dir/build.make CMakeFiles/jetpac_v1.dir/src/player.cpp.o
+.PHONY : src/player.cpp.o
+
+src/player.i: src/player.cpp.i
+
+.PHONY : src/player.i
+
+# target to preprocess a source file
+src/player.cpp.i:
+	$(MAKE) -f CMakeFiles/jetpac_v1.dir/build.make CMakeFiles/jetpac_v1.dir/src/player.cpp.i
+.PHONY : src/player.cpp.i
+
+src/player.s: src/player.cpp.s
+
+.PHONY : src/player.s
+
+# target to generate assembly for a file
+src/player.cpp.s:
+	$(MAKE) -f CMakeFiles/jetpac_v1.dir/build.make CMakeFiles/jetpac_v1.dir/src/player.cpp.s
+.PHONY : src/player.cpp.s
+
 src/timer.o: src/timer.cpp.o
 
 .PHONY : src/timer.o
@@ -321,9 +321,6 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... jetpac_v1"
-	@echo "... src/ball.o"
-	@echo "... src/ball.i"
-	@echo "... src/ball.s"
 	@echo "... src/color.o"
 	@echo "... src/color.i"
 	@echo "... src/color.s"
@@ -339,6 +336,9 @@ help:
 	@echo "... src/other_handlers.o"
 	@echo "... src/other_handlers.i"
 	@echo "... src/other_handlers.s"
+	@echo "... src/player.o"
+	@echo "... src/player.i"
+	@echo "... src/player.s"
 	@echo "... src/timer.o"
 	@echo "... src/timer.i"
 	@echo "... src/timer.s"
