@@ -1,6 +1,6 @@
-// #include "main.h"
+#include "main.h"
 #include "timer.h"
-#include "ball.h"
+#include "player.h"
 
 using namespace std;
 
@@ -13,8 +13,8 @@ GLFWwindow *window;
 **************************/
 
 Ball ball1;
-Ball ball2;
-
+Floor base;
+vector<Coins> mycoins;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
@@ -32,9 +32,9 @@ void draw() {
     glUseProgram (programID);
 
     // Eye - Location of camera. Don't change unless you are sure!!
-    glm::vec3 eye (0, 0, 25);
+    glm::vec3 eye (0, 1.5*150, 25);
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (0, 0, 0);
+    glm::vec3 target (0, 1.5*150, 0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
 
@@ -54,42 +54,57 @@ void draw() {
 
     // Scene render
     ball1.draw(VP);
-    ball2.draw(VP);
-
+    base.draw(VP);
+    for(int i=0;i<mycoins.size();i++)
+        mycoins[i].draw(VP);
 }
 
 void tick_input(GLFWwindow *window) {
     int left  = glfwGetKey(window, GLFW_KEY_LEFT);
     int right = glfwGetKey(window, GLFW_KEY_RIGHT);
+    int up = glfwGetKey(window, GLFW_KEY_UP);
+    
     if (left) {
-        // Do something
+       ball1.tick(-1);
     }
+    if (right) {
+        ball1.tick(1);
+    }
+    if(up){
+        ball1.tick(2);
+    }
+    else
+        ball1.tick(-2);
 }
 
 void tick_elements() {
-    bounding_box_t b1;
-    bounding_box_t b2; 
-    b1.x = ball1.position.x;
-    b1.y = ball1.position.y;
-    b1.width = 2.0f;
-    b1.height = 2.0f;
+    //camera_rotation_angle += 1;
+    for(int i=0;i<mycoins.size();i++)
+        mycoins[i].tick();
+    
+    bounding_box_t boxplayer;
+    boxplayer.x = ball1.position.x;
+    boxplayer.y = ball1.position.y; 
+    boxplayer.width = 90.0f; 
+    boxplayer.height = 90.0f; 
 
-    b2.x = ball2.position.x;
-    b2.y = ball2.position.y;
-    b2.width = 2.0f;
-    b2.height = 2.0f;
-    if(detect_collision(b1,b2))
+    for(int i = 0; i < mycoins.size(); i++)
     {
-        ball1.tick(-1);
-        ball2.tick(-1);
+        bounding_box_t boxcoin;
+        boxcoin.x = mycoins[i].position.x;
+        boxcoin.y = mycoins[i].position.y;
+        boxcoin.width = 2*mycoins[i].radius;
+        boxcoin.height = 2*mycoins[i].radius;
+
+        if(detect_collision(boxplayer,boxcoin))
+            mycoins.erase(mycoins.begin()+i);
     }
     
-    else
-    {
-        ball1.tick(1);
-        ball2.tick(2);
-    }
-    //camera_rotation_angle += 1;
+    printf("x position %f\n", ball1.position.x);
+    printf("y position %f\n", ball1.position.y);
+    printf("x speed %f\n", ball1.speedx);
+    printf("y speed %f\n", ball1.speedy);
+    printf("acc %f\n", ball1.accy);
 }
 
 /* Initialize the OpenGL rendering properties */
@@ -97,10 +112,19 @@ void tick_elements() {
 void initGL(GLFWwindow *window, int width, int height) {
     /* Objects should be created before any other gl function and shaders */
     // Create the models
+    for(int i=0;i<1000;i++)
+    {
+        Coins coin1;
+        if(rand()%2)
+            coin1 = Coins(500*i+rand()%25,rand()%600+100,20,COLOR_BLACK);
+        else
+            coin1 = Coins(500*i+rand()%25,rand()%600+100,30,COLOR_NEONGREEN);
 
-    ball1       = Ball(-5, 0, COLOR_RED);
-    ball2       = Ball(5, 0, COLOR_GREEN);
+        mycoins.push_back(coin1);
+    }
 
+    ball1    = Ball(-2, 0, COLOR_RED);
+    base     = Floor(COLOR_GREEN); 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
     // Get a handle for our "MVP" uniform
@@ -155,13 +179,14 @@ int main(int argc, char **argv) {
 }
 
 bool detect_collision(bounding_box_t a, bounding_box_t b) {
-    return (abs(a.x - b.x) * 2 < (a.width + b.width));
+    return (abs(a.x - b.x) * 2 < (a.width + b.width)) && 
+    (abs(a.y - b.y) * 2 < (a.height + b.height));
 }
 
 void reset_screen() {
-    float top    = screen_center_y + 4 / screen_zoom;
-    float bottom = screen_center_y - 4 / screen_zoom;
-    float left   = screen_center_x - 4 / screen_zoom;
-    float right  = screen_center_x + 4 / screen_zoom;
+    float top    = screen_center_y + 600 / screen_zoom;
+    float bottom = screen_center_y - 600 / screen_zoom;
+    float left   = screen_center_x - 600 / screen_zoom;
+    float right  = screen_center_x + 600 / screen_zoom;
     Matrices.projection = glm::ortho(left, right, bottom, top, 0.1f, 500.0f);
 }

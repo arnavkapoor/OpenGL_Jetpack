@@ -5,7 +5,7 @@
 #include <cmath>
 #include <fstream>
 #include <vector>
-
+#include <bits/stdc++.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -81,5 +81,7 @@ extern const color_t COLOR_RED;
 extern const color_t COLOR_GREEN;
 extern const color_t COLOR_BLACK;
 extern const color_t COLOR_BACKGROUND;
+extern const color_t COLOR_NEONGREEN;
+
 
 #endif

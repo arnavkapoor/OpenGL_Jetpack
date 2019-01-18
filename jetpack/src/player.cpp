@@ -1,19 +1,21 @@
-#include "ball.h"
+#include "player.h"
 #include "main.h"
 
 Ball::Ball(float x, float y, color_t color) {
     this->position = glm::vec3(x, y, 0);
     this->rotation = 0;
-    speed = 0.04;
+    speedx = 0;
+    speedy = 0;
+    accy = -0.15;
     // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
     // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
     static const GLfloat vertex_buffer_data[] = {
-        -1.0f,-1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f, // triangle 1 : end
-        1.0f,-1.0f, 0.0f,
-        1.0f,-1.0f, 0.0f,
-        -1.0f,1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f, // triangle 2 : end
+        -45.0f,-45.0f, 0.0f,
+        -45.0f, 45.0f, 0.0f, // triangle 3 : end
+        45.0f,-45.0f, 0.0f,
+        45.0f,-45.0f, 0.0f,
+        -45.0f,45.0f, 0.0f,
+        45.0f, 45.0f, 0.0f, // triangle 2 : end
         };
 
     this->object = create3DObject(GL_TRIANGLES, 2*3, vertex_buffer_data, color, GL_FILL);
@@ -38,10 +40,34 @@ void Ball::set_position(float x, float y) {
 void Ball::tick(int dir) {
     //this->rotation += speed;
     if(dir==1)
-        this->position.x += speed;
-    if(dir==2)
-        this->position.x -= speed;
+        this->speedx = 6; 
     if(dir==-1)
-        this->position.y -= speed;        
+        this->speedx = -6;
+    if(dir==2){
+        this->speedy += 0.6;
+    }
+    if(dir==-2)
+        this->speedx = 0.00;
+
+    this->speedy += accy;
+
+    this->position.x += speedx ;
+    this->position.y += speedy ;
+
+    if(this->position.x < -3.5*150 )
+        this->position.x = -3.5*150;
+    if(this->position.x > 3.5*150 )
+        this->position.x = 3.5*150;
+    
+    if(this->position.y <= 0)
+    {
+       this->position.y = 0;
+       this->speedy = 0;
+    }
+    if(this->position.y > 5*150)
+    {
+        this->position.y = 5*150;
+        this->speedy = 0;    
+    }
 }
 
