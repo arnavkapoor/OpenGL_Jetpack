@@ -8,7 +8,7 @@
 #include <bits/stdc++.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
+#include <unistd.h>
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -69,6 +69,7 @@ struct bounding_box_t {
     float y;
     float width;
     float height;
+    float angle;    
 };
 
 bool detect_collision(bounding_box_t a, bounding_box_t b);
@@ -82,6 +83,9 @@ extern const color_t COLOR_GREEN;
 extern const color_t COLOR_BLACK;
 extern const color_t COLOR_BACKGROUND;
 extern const color_t COLOR_NEONGREEN;
+extern const color_t COLOR_BEAM;
+extern const color_t COLOR_BLUE;
+extern const color_t COLOR_SILVER;
 
 
 #endif

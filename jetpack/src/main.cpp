@@ -1,6 +1,7 @@
 #include "main.h"
 #include "timer.h"
 #include "player.h"
+#define debug(x) cerr << #x << " is " << x << endl;
 
 using namespace std;
 
@@ -15,11 +16,14 @@ GLFWwindow *window;
 Ball ball1;
 Floor base;
 vector<Coins> mycoins;
+vector<Beams> mybeams;
+vector<Balloons> myballoons;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
-
+int f = 0;
 Timer t60(1.0 / 60);
+Timer t1(1.0 / 4);
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
@@ -57,24 +61,36 @@ void draw() {
     base.draw(VP);
     for(int i=0;i<mycoins.size();i++)
         mycoins[i].draw(VP);
+    for(int i=0;i<mybeams.size();i++)
+        mybeams[i].draw(VP);
+    for(int i=0;i<myballoons.size();i++)
+        myballoons[i].draw(VP);
+
 }
 
 void tick_input(GLFWwindow *window) {
     int left  = glfwGetKey(window, GLFW_KEY_LEFT);
     int right = glfwGetKey(window, GLFW_KEY_RIGHT);
     int up = glfwGetKey(window, GLFW_KEY_UP);
+    int water = glfwGetKey(window, GLFW_KEY_SPACE);
     
     if (left) {
-       ball1.tick(-1);
+       ball1.tick(DIR_LEFT);
     }
     if (right) {
-        ball1.tick(1);
+        ball1.tick(DIR_RIGHT);
     }
     if(up){
-        ball1.tick(2);
+        ball1.tick(DIR_UP);
     }
-    else
-        ball1.tick(-2);
+    if(!(up or left or right)){
+        ball1.tick(DIR_DOWN);
+    }
+    if(water and t1.processTick()){
+        Balloons balloons1 = Balloons(ball1.position.x+50.0f,ball1.position.y+50.0f,20.0f,COLOR_BLUE);
+        myballoons.push_back(balloons1);
+       // cout<<myballoons.size()<<endl;
+    }
 }
 
 void tick_elements() {
@@ -82,29 +98,74 @@ void tick_elements() {
     for(int i=0;i<mycoins.size();i++)
         mycoins[i].tick();
     
-    bounding_box_t boxplayer;
-    boxplayer.x = ball1.position.x;
-    boxplayer.y = ball1.position.y; 
-    boxplayer.width = 90.0f; 
-    boxplayer.height = 90.0f; 
-
+    for(int i=0;i<mybeams.size();i++)
+        mybeams[i].tick();
+    
+    for(int i=0;i<myballoons.size();i++)
+        myballoons[i].tick();
+    
+    bounding_box_t boxplayer = ball1.box;
+    
     for(int i = 0; i < mycoins.size(); i++)
     {
-        bounding_box_t boxcoin;
-        boxcoin.x = mycoins[i].position.x;
-        boxcoin.y = mycoins[i].position.y;
-        boxcoin.width = 2*mycoins[i].radius;
-        boxcoin.height = 2*mycoins[i].radius;
-
+        bounding_box_t boxcoin = mycoins[i].box;
         if(detect_collision(boxplayer,boxcoin))
+        {
+            printf("collide\n");
+            printf("x position ball %f\n", ball1.position.x);
+            printf("y position ball %f\n", ball1.position.y);
+            printf("x position ball %f\n", mycoins[i].position.x);
+            printf("y position ball %f\n", mycoins[i].position.y);
+          //  usleep(100000000);
             mycoins.erase(mycoins.begin()+i);
+        }
     }
     
-    printf("x position %f\n", ball1.position.x);
-    printf("y position %f\n", ball1.position.y);
-    printf("x speed %f\n", ball1.speedx);
-    printf("y speed %f\n", ball1.speedy);
-    printf("acc %f\n", ball1.accy);
+    for(int i = 0; i < mybeams.size(); i++)
+    {
+        bounding_box_t boxbeam = mybeams[i].box;
+        if(detect_collision(boxplayer,boxbeam))
+        {
+            printf("collide\n");
+            printf("x position ball %f\n", ball1.position.x);
+            printf("y position ball %f\n", ball1.position.y);
+            printf("x position ball %f\n", mybeams[i].position.x);
+            printf("y position ball %f\n", mybeams[i].position.y);
+          //  usleep(100000000);
+            mybeams.erase(mybeams.begin()+i);
+        }
+    }
+
+    for(int i = 0; i < mybeams.size(); i++)
+    {
+        for(int j = 0 ; j < myballoons.size();j++)
+        {
+            bounding_box_t boxbeam = mybeams[i].box;
+            bounding_box_t boxballoon = myballoons[j].box;
+            
+            if(detect_collision(boxballoon,boxbeam))
+            {
+                printf("collide\n");
+                printf("x position ball %f\n", ball1.position.x);
+                printf("y position ball %f\n", ball1.position.y);
+                printf("x position ball %f\n", mybeams[i].position.x);
+                printf("y position ball %f\n", mybeams[i].position.y);
+                mybeams.erase(mybeams.begin()+i);
+                myballoons.erase(myballoons.begin()+j);
+            }
+
+            if(myballoons[j].position.y <= -45.0f)
+                myballoons.erase(myballoons.begin()+j);
+        }
+    }
+
+
+    // printf("x position %f\n", ball1.position.x);
+    // printf("x position %f\n", ball1.position.x);
+    // printf("y position %f\n", ball1.position.y);
+    // printf("x speed %f\n", ball1.speedx);
+    // printf("y speed %f\n", ball1.speedy);
+    // printf("acc %f\n", ball1.accy);
 }
 
 /* Initialize the OpenGL rendering properties */
@@ -112,18 +173,27 @@ void tick_elements() {
 void initGL(GLFWwindow *window, int width, int height) {
     /* Objects should be created before any other gl function and shaders */
     // Create the models
+    
     for(int i=0;i<1000;i++)
     {
         Coins coin1;
-        if(rand()%2)
-            coin1 = Coins(500*i+rand()%25,rand()%600+100,20,COLOR_BLACK);
-        else
+        if(rand()%3>=1)
             coin1 = Coins(500*i+rand()%25,rand()%600+100,30,COLOR_NEONGREEN);
+        else
+            coin1 = Coins(500*i+rand()%25,rand()%600+100,20,COLOR_SILVER);
 
         mycoins.push_back(coin1);
     }
-
-    ball1    = Ball(-2, 0, COLOR_RED);
+    
+    for(int i=0;i<1000;i++)
+    {
+        Beams beam1;
+        beam1 = Beams(500*i+rand()%25,rand()%600+200,rand()%180,COLOR_BEAM);
+        mybeams.push_back(beam1);
+    }
+   
+   
+    ball1    = Ball(0, 0, COLOR_RED);
     base     = Floor(COLOR_GREEN); 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
@@ -177,11 +247,165 @@ int main(int argc, char **argv) {
 
     quit(window);
 }
+pair<float,float> myrotate(float angle, float x , float y,float origx,float origy)
+{
+    pair <float,float> rotated_point;
+    if(f)
+    {
+        debug(angle);
+        debug(x);
+        debug(y);
+    }
+    rotated_point.first = (x-origx)*cos(angle)-(y-origy)*sin(angle)+origx;
+    rotated_point.second = (x-origx)*sin(angle)+(y-origy)*cos(angle)+origy;
+    return rotated_point;
+}
+
+bool line_eq(pair<float,float> line1 , pair<float,float> line2 , pair<float,float> pnt)
+{
+    float y = pnt.second;
+    float y1 = line1.second;
+    float y2 = line2.second;
+    float x = pnt.first;
+    float x1 = line1.first;
+    float x2 = line2.first;
+
+    float myvar = ((y-y1)*(x2-x1))-((y2-y1)*(x-x1));
+    // if(f)
+    // {
+    //     debug(y);
+    //     debug(y1);
+    //     debug(y2);
+    //     debug(x);
+    //     debug(x1);
+    //     debug(x2);
+
+    //     debug(myvar);
+    // }
+    return (myvar >= 0 ) ? true : false;
+    
+}
+
+bool lines_collision( pair<float,float> line1 , pair<float,float> line2,pair<float,float> same1,
+pair<float,float> same2,pair<float,float> diff1,pair<float,float> diff2,pair<float,float> diff3,
+pair<float,float> diff4 )
+{
+
+    bool s1 = line_eq(line1,line2,same1);
+    bool s2 = line_eq(line1,line2,same2);
+
+    bool d1 = line_eq(line1,line2,diff1);
+    bool d2 = line_eq(line1,line2,diff2);
+    bool d3 = line_eq(line1,line2,diff3);
+    bool d4 = line_eq(line1,line2,diff4);
+    // if(f)
+    // {
+    //     debug(s1);
+    //     debug(s2);
+
+    //     debug(d1);
+    //     debug(d2);
+    //     debug(d3);
+    //     debug(d4);
+    // }
+
+    if(s1==s2 and d1==d2 and d2==d3 and d3==d4 and s1!=d1)
+        return true;
+    else
+        return false;
+}
 
 bool detect_collision(bounding_box_t a, bounding_box_t b) {
-    return (abs(a.x - b.x) * 2 < (a.width + b.width)) && 
-    (abs(a.y - b.y) * 2 < (a.height + b.height));
+    
+    pair<float,float> ap1,ap2,ap3,ap4,bp1,bp2,bp3,bp4; 
+    
+    ap1 = myrotate(a.angle,a.x+(a.width/2),a.y+(a.height/2),a.x,a.y); 
+    ap2 = myrotate(a.angle,a.x+(a.width/2),a.y-(a.height/2),a.x,a.y); 
+    ap3 = myrotate(a.angle,a.x-(a.width/2),a.y-(a.height/2),a.x,a.y); 
+    ap4 = myrotate(a.angle,a.x-(a.width/2),a.y+(a.height/2),a.x,a.y); 
+
+    bp1 = myrotate(b.angle,b.x+(b.width/2),b.y+(b.height/2),b.x,b.y); 
+    bp2 = myrotate(b.angle,b.x+(b.width/2),b.y-(b.height/2),b.x,b.y); 
+    bp3 = myrotate(b.angle,b.x-(b.width/2),b.y-(b.height/2),b.x,b.y); 
+    bp4 = myrotate(b.angle,b.x-(b.width/2),b.y+(b.height/2),b.x,b.y); 
+
+    if ( (abs(a.x - b.x) * 2 < (a.width + b.width)) && (abs(a.y - b.y) * 2 < (a.height + b.height)) )
+    {
+        printf("collision\n");
+    //    f=1;
+        debug(ball1.position.x);
+        debug(ball1.position.y);
+        ap1 = myrotate(a.angle,a.x+(a.width/2),a.y+(a.height/2),a.x,a.y); 
+        debug(ap1.first);
+        debug(ap1.second);
+        debug(ap2.first);
+        debug(ap2.second);
+        debug(ap3.first);
+        debug(ap3.second);
+        debug(ap4.first);
+        debug(ap4.second);
+        debug(bp1.first);
+        debug(bp1.second);
+        debug(bp2.first);
+        debug(bp2.second);
+        debug(bp3.first);
+        debug(bp3.second);
+        debug(bp4.first);
+        debug(bp4.second);
+        lines_collision(ap1,ap2,ap3,ap4,bp1,bp2,bp3,bp4);
+       // usleep(1000000000);
+    }   
+
+    if(lines_collision(ap1,ap2,ap3,ap4,bp1,bp2,bp3,bp4))
+        return false;    
+    
+    if(lines_collision(ap2,ap3,ap4,ap1,bp1,bp2,bp3,bp4))
+        return false;
+    
+    if(lines_collision(ap3,ap4,ap1,ap2,bp1,bp2,bp3,bp4))
+        return false;
+    
+    if(lines_collision(ap4,ap1,ap2,ap3,bp1,bp2,bp3,bp4))
+        return false;
+    
+    if(lines_collision(bp1,bp2,bp3,bp4,ap1,ap2,ap3,ap4))
+        return false;    
+    
+    if(lines_collision(bp2,bp3,bp4,bp1,ap1,ap2,ap3,ap4))
+        return false;
+    
+    if(lines_collision(bp3,bp4,bp1,bp2,ap1,ap2,ap3,ap4))
+        return false;
+    
+    if(lines_collision(bp4,bp1,bp2,bp3,ap1,ap2,ap3,ap4))
+        return false;
+    
+        // printf("collision\n");
+        // f=1;
+        // debug(ball1.position.x);
+        // debug(ball1.position.y);
+        // debug(ap1.first);
+        // debug(ap1.second);
+        // debug(ap2.first);
+        // debug(ap2.second);
+        // debug(ap3.first);
+        // debug(ap3.second);
+        // debug(ap4.first);
+        // debug(ap4.second);
+        // debug(bp1.first);
+        // debug(bp1.second);
+        // debug(bp2.first);
+        // debug(bp2.second);
+        // debug(bp3.first);
+        // debug(bp3.second);
+        // debug(bp4.first);
+        // debug(bp4.second);
+        // lines_collision(ap1,ap2,ap3,ap4,bp1,bp2,bp3,bp4);
+        // usleep(1000000000);
+    return true;
+    
 }
+
 
 void reset_screen() {
     float top    = screen_center_y + 600 / screen_zoom;
