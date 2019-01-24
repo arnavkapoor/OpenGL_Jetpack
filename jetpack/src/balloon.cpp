@@ -1,15 +1,15 @@
 #include "player.h"
 #include "main.h"
 
-Balloons::Balloons(float x, float y, float radius,color_t color) {
+Balloons::Balloons(float x, float y,float spx,float spy, float radius,color_t color) {
     this->position = glm::vec3(x, y, 0);
     this->rotation = 0;
     this->radius = radius;
     
     bounding_box_t box_cover;
     
-    this->speedx = 6.0;
-    this->speedy = 10.0;
+    this->speedx = 6.0+spx/2;
+    this->speedy = 10.0+spy/2;
     this->accy = -0.2;
     
     box_cover.x = x;

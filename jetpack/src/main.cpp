@@ -15,15 +15,24 @@ GLFWwindow *window;
 
 Ball ball1;
 Floor base;
+Magnets magnet;
 vector<Coins> mycoins;
 vector<Beams> mybeams;
 vector<Balloons> myballoons;
+vector<Boomerang> myboomerangs;
+vector< pair <Beams,Beams> > mypairbeams;
+
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
 int f = 0;
 Timer t60(1.0 / 60);
 Timer t1(1.0 / 4);
+Timer magapp(12.0 / 1);
+Timer magdisapp(3.94/1);
+
+bool magpres = 0;
+
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
@@ -59,13 +68,21 @@ void draw() {
     // Scene render
     ball1.draw(VP);
     base.draw(VP);
+    magnet.draw(VP);
+
     for(int i=0;i<mycoins.size();i++)
         mycoins[i].draw(VP);
     for(int i=0;i<mybeams.size();i++)
         mybeams[i].draw(VP);
     for(int i=0;i<myballoons.size();i++)
         myballoons[i].draw(VP);
-
+    for(int i=0;i<myboomerangs.size();i++)
+        myboomerangs[i].draw(VP);
+    for(int i=0;i<myboomerangs.size();i++)
+    {
+        mypairbeams[i].first.draw(VP);
+        mypairbeams[i].second.draw(VP);    
+    }   
 }
 
 void tick_input(GLFWwindow *window) {
@@ -87,7 +104,7 @@ void tick_input(GLFWwindow *window) {
         ball1.tick(DIR_DOWN);
     }
     if(water and t1.processTick()){
-        Balloons balloons1 = Balloons(ball1.position.x+50.0f,ball1.position.y+50.0f,20.0f,COLOR_BLUE);
+        Balloons balloons1 = Balloons(ball1.position.x+50.0f,ball1.position.y+50.0f,ball1.speedx,ball1.speedy,20.0f,COLOR_BLUE);
         myballoons.push_back(balloons1);
        // cout<<myballoons.size()<<endl;
     }
@@ -95,14 +112,61 @@ void tick_input(GLFWwindow *window) {
 
 void tick_elements() {
     //camera_rotation_angle += 1;
+    if(magapp.processTick())
+    {
+        cout<<"appear"<<endl;
+        magpres=1;
+        magnet.position.x = -350+rand()%700;
+        magnet.position.y =  0+rand()%700;
+    }
+    if(magdisapp.processTick())
+    {
+        cout<<"disappear"<<endl;
+        magpres=0;
+        magnet.position.x = 900;
+        magnet.position.y = 900;
+    }    
+    if(magpres)
+    {
+        if(magnet.position.x - ball1.position.x > 0)
+            ball1.position.x += 5;
+        
+        if(magnet.position.x - ball1.position.x < 0)
+            ball1.position.x -= 5;
+
+        if(magnet.position.y - ball1.position.y > 0)
+        {
+            ball1.speedy = 0.0;
+            ball1.position.y += 5;
+        }
+
+        if(magnet.position.y - ball1.position.y < 0)
+        {
+
+            ball1.speedy = 0.0;
+            ball1.position.y -= 5;
+        }  
+    }
+
     for(int i=0;i<mycoins.size();i++)
         mycoins[i].tick();
     
     for(int i=0;i<mybeams.size();i++)
-        mybeams[i].tick();
+        mybeams[i].tick(SINGLE);
     
     for(int i=0;i<myballoons.size();i++)
         myballoons[i].tick();
+    
+    for(int i=0;i<myboomerangs.size();i++)
+        myboomerangs[i].tick();
+    
+    for(int i=0;i<mypairbeams.size();i++)
+    {
+        mypairbeams[i].first.tick(DOUBLE_TOP);
+        mypairbeams[i].second.tick(DOUBLE_BOTTOM);
+    }
+    //cout<<myboomerangs.size()<<endl;
+    
     
     bounding_box_t boxplayer = ball1.box;
     
@@ -134,6 +198,36 @@ void tick_elements() {
           //  usleep(100000000);
             mybeams.erase(mybeams.begin()+i);
         }
+    }
+    for(int i = 0; i < mypairbeams.size(); i++)
+    {
+        bounding_box_t boxbeam1 = mypairbeams[i].first.box;
+        bounding_box_t boxbeam2 = mypairbeams[i].second.box;
+
+        if(detect_collision(boxplayer,boxbeam1) or detect_collision(boxplayer,boxbeam2))
+        {
+            printf("collide\n");
+            printf("x position ball %f\n", ball1.position.x);
+            printf("y position ball %f\n", ball1.position.y);
+            mypairbeams.erase(mypairbeams.begin()+i);
+        }
+    }
+    
+    for(int i = 0; i < myboomerangs.size(); i++)
+    {
+        bounding_box_t boxboomerang = myboomerangs[i].box;
+        if(detect_collision(boxplayer,boxboomerang))
+        {
+            printf("collide\n");
+            printf("x position ball %f\n", ball1.position.x);
+            printf("y position ball %f\n", ball1.position.y);
+            printf("x position ball %f\n", myboomerangs[i].position.x);
+            printf("y position ball %f\n", myboomerangs[i].position.y);
+          //  usleep(100000000);
+            myboomerangs.erase(myboomerangs.begin()+i);
+        }
+        if(myboomerangs[i].position.y<0)
+            myboomerangs.erase(myboomerangs.begin()+i);
     }
 
     for(int i = 0; i < mybeams.size(); i++)
@@ -174,7 +268,7 @@ void initGL(GLFWwindow *window, int width, int height) {
     /* Objects should be created before any other gl function and shaders */
     // Create the models
     
-    for(int i=0;i<1000;i++)
+    for(int i=0;i<1000;i+=2)
     {
         Coins coin1;
         if(rand()%3>=1)
@@ -185,14 +279,34 @@ void initGL(GLFWwindow *window, int width, int height) {
         mycoins.push_back(coin1);
     }
     
-    for(int i=0;i<1000;i++)
+    for(int i=0;i<1000;i+=2)
     {
         Beams beam1;
         beam1 = Beams(500*i+rand()%25,rand()%600+200,rand()%180,COLOR_BEAM);
         mybeams.push_back(beam1);
     }
+    
+    for(int i=2;i<1000;i+=4)
+    {
+        Beams beam1;
+        Beams beam2;
+
+        beam1 = Beams(400*i,400,90,COLOR_RED,1);
+        beam2 = Beams(400*i,200,90,COLOR_RED,1);
+
+        mypairbeams.push_back(make_pair(beam1,beam2));
+    }
+
+    for(int i=2;i<1000;i+=8)
+    {
+        Boomerang boom1;
+        boom1 = Boomerang(500*i+rand()%25,700,COLOR_BLACK);
+        myboomerangs.push_back(boom1);
+    }
+
+    
    
-   
+    magnet   = Magnets(900,900,30,COLOR_DARKBLUE);
     ball1    = Ball(0, 0, COLOR_RED);
     base     = Floor(COLOR_GREEN); 
     // Create and compile our GLSL program from the shaders
@@ -247,6 +361,7 @@ int main(int argc, char **argv) {
 
     quit(window);
 }
+
 pair<float,float> myrotate(float angle, float x , float y,float origx,float origy)
 {
     pair <float,float> rotated_point;

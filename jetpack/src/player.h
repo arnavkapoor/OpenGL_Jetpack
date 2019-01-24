@@ -66,13 +66,14 @@ private:
 class Beams {
 public:
     Beams() {}
-    Beams(float x,float y,float rotation,color_t color);
+    Beams(float x,float y,float rotation,color_t color,int movement = 0);
     glm::vec3 position;
     float rotation;
+    int movement;
     bounding_box_t box;    
     void set_position(float x, float y);
     void draw(glm::mat4 VP);
-    void tick();
+    void tick(int type);
 private:
     VAO *object1;
     VAO *object2;
@@ -87,7 +88,7 @@ private:
 class Balloons {
 public:
     Balloons() {}
-    Balloons(float x,float y,float radius,color_t color);
+    Balloons(float x,float y,float spx,float spy,float radius,color_t color);
     glm::vec3 position;
     float radius;
     float rotation;
@@ -103,3 +104,45 @@ private:
 };
 
 #endif //BALLOON_H
+
+
+#ifndef BOOMERANG_H
+#define BOOMERANG_H
+
+class Boomerang {
+public:
+    Boomerang() {}
+    Boomerang(float x,float y,color_t color);
+    glm::vec3 position;
+    float rotation;
+    bounding_box_t box;    
+    void set_position(float x, float y);
+    void draw(glm::mat4 VP);
+    void tick();
+private:
+    VAO *object;
+};
+
+#endif //COIN_H
+
+
+#ifndef MAGNET_H
+#define MAGNET_H
+
+class Magnets {
+public:
+    Magnets() {}
+    Magnets(float x,float y,float radius,color_t color);
+    glm::vec3 position;
+    float rotation;
+    float radius;
+    bounding_box_t box;    
+    void set_position(float x, float y);
+    void draw(glm::mat4 VP);
+    void tick();
+private:
+    VAO *object;
+};
+
+#endif //MAGNET_H
+

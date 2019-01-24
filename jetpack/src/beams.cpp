@@ -1,10 +1,11 @@
 #include "player.h"
 #include "main.h"
 
-Beams::Beams(float x, float y,float rotation,color_t color) {
+Beams::Beams(float x, float y,float rotation,color_t color,int movement) {
     this->position = glm::vec3(x, y, 0);
     this->rotation = rotation;
-   
+    this->movement = movement;
+
     bounding_box_t box_cover;
     
     box_cover.x = x;
@@ -83,8 +84,26 @@ void Beams::set_position(float x, float y) {
     this->position = glm::vec3(x, y, 0);
 }
 
-void Beams::tick() {
+void Beams::tick(int type) {
+    
+    if(type == DOUBLE_BOTTOM)
+    {
+        if(this->position.y >= 550 or this->position.y <= 0) 
+            this->movement *= -1;
+    }
+
+    if(type == DOUBLE_TOP)
+    {
+        if(this->position.y >= 750 or this->position.y <= 200)
+            this->movement *= -1;
+    }
+
+
     this->position.x -= 3;
+    this->position.y += this->movement*1;
+
+
     this->box.x = this->position.x;
+    this->box.y = this->position.y;
 }
 

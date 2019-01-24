@@ -63,6 +63,8 @@ extern GLMatrices Matrices;
 // ---- Logic ----
 
 enum direction_t { DIR_UP, DIR_RIGHT, DIR_DOWN, DIR_LEFT };
+enum beamtype_t { SINGLE, DOUBLE_TOP, DOUBLE_BOTTOM};
+
 
 struct bounding_box_t {
     float x;
@@ -86,6 +88,6 @@ extern const color_t COLOR_NEONGREEN;
 extern const color_t COLOR_BEAM;
 extern const color_t COLOR_BLUE;
 extern const color_t COLOR_SILVER;
-
+extern const color_t COLOR_DARKBLUE;
 
 #endif
