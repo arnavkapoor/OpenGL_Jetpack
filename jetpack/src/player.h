@@ -46,10 +46,11 @@ private:
 class Coins {
 public:
     Coins() {}
-    Coins(float x,float y,float radius,color_t color);
+    Coins(float x,float y,float radius,color_t color,int score);
     glm::vec3 position;
     float rotation;
     float radius;
+    int score;
     bounding_box_t box;    
     void set_position(float x, float y);
     void draw(glm::mat4 VP);
@@ -144,5 +145,66 @@ private:
     VAO *object;
 };
 
-#endif //MAGNET_H
+#endif
 
+#ifndef SCORE_H
+#define SCORE_H
+
+class Score {
+public:
+    Score() {}
+    Score(float x, float y, float rotation);
+    float rotation;
+    glm::vec3 position;
+    void set_position(float x, float y);
+    void draw(glm::mat4 VP);
+private:
+    VAO *object;
+};
+
+#endif //SCORE_H
+
+#ifndef BONUS_H
+#define BONUS_H
+
+class Bonus {
+public:
+    Bonus() {}
+    Bonus(float x,float y,float radius,int type,color_t color);
+    glm::vec3 position;
+    float radius;
+    float rotation;
+    float score;
+    double speedx;
+    double speedy;
+    double accy;
+    bounding_box_t box;    
+    void set_position(float x, float y);
+    void draw(glm::mat4 VP);
+    void tick();
+private:
+    VAO *object;
+};
+
+#endif
+
+#ifndef SEMI_H
+#define SEMI_H
+
+class Semicircle {
+public:
+    Semicircle() {}
+    Semicircle(float x,float y,float radius,color_t color);
+    glm::vec3 position;
+    float rotation;
+    float radius; 
+    bounding_box_t box;
+    void set_position(float x, float y);
+    void draw(glm::mat4 VP);
+    void tick();
+private:
+    VAO *object1;
+    VAO *object2;
+};
+
+#endif

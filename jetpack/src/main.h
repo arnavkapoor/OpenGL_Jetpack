@@ -77,6 +77,7 @@ struct bounding_box_t {
 bool detect_collision(bounding_box_t a, bounding_box_t b);
 
 extern float screen_zoom, screen_center_x, screen_center_y;
+extern int lives;
 void reset_screen();
 
 // ---- Colors ----
@@ -89,5 +90,6 @@ extern const color_t COLOR_BEAM;
 extern const color_t COLOR_BLUE;
 extern const color_t COLOR_SILVER;
 extern const color_t COLOR_DARKBLUE;
+extern const color_t COLOR_GOLD;
 
 #endif

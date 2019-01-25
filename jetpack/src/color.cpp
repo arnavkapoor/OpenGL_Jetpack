@@ -9,4 +9,6 @@ const color_t COLOR_NEONGREEN = {57, 255, 20};
 const color_t COLOR_BEAM = {255, 174,66};
 const color_t COLOR_SILVER = {176,176,176};
 const color_t COLOR_DARKBLUE = {0,0,244};
+const color_t COLOR_GOLD = {255,215,0};
+
 

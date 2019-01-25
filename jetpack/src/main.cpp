@@ -21,23 +21,33 @@ vector<Beams> mybeams;
 vector<Balloons> myballoons;
 vector<Boomerang> myboomerangs;
 vector< pair <Beams,Beams> > mypairbeams;
+vector<Score> mydigs;
+vector<Bonus> mybonus;
+vector<Semicircle> mysemi;
 
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
 int f = 0;
 Timer t60(1.0 / 60);
+Timer t15(1.0 / 15);
 Timer t1(1.0 / 4);
-Timer magapp(12.0 / 1);
-Timer magdisapp(3.94/1);
-
+Timer magapp(30.0 / 1);
+Timer magdisapp(4.96/1);
+int score = 0;
+int lives = 10;
 bool magpres = 0;
-
 
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
 void draw() {
+    char buffer [50];
+    sprintf (buffer, "lives: %d",lives);
+    glfwSetWindowTitle (window,buffer);
+    if(lives==0)
+        quit(window);
     // clear the color and depth in the frame buffer
+    reset_screen();
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // use the loaded shader program
@@ -50,7 +60,8 @@ void draw() {
     glm::vec3 target (0, 1.5*150, 0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
-
+    
+   
     // Compute Camera matrix (view)
     Matrices.view = glm::lookAt( eye, target, up ); // Rotating Camera for 3D
     // Don't change unless you are sure!!
@@ -64,9 +75,11 @@ void draw() {
     // For each model you render, since the MVP will be different (at least the M part)
     // Don't change unless you are sure!!
     glm::mat4 MVP;  // MVP = Projection * View * Model
-
+    for(int i=0;i<mysemi.size();i++)
+        mysemi[i].draw(VP);
+        
     // Scene render
-    ball1.draw(VP);
+    ball1.draw(VP);    
     base.draw(VP);
     magnet.draw(VP);
 
@@ -78,11 +91,18 @@ void draw() {
         myballoons[i].draw(VP);
     for(int i=0;i<myboomerangs.size();i++)
         myboomerangs[i].draw(VP);
+    for(int i=0;i<mybonus.size();i++)
+        mybonus[i].draw(VP);
+    
     for(int i=0;i<myboomerangs.size();i++)
     {
         mypairbeams[i].first.draw(VP);
         mypairbeams[i].second.draw(VP);    
     }   
+    
+    for(int i=0 ; i< mydigs.size();i++)
+        mydigs[i].draw(VP);
+    
 }
 
 void tick_input(GLFWwindow *window) {
@@ -110,7 +130,72 @@ void tick_input(GLFWwindow *window) {
     }
 }
 
+void render_score(int hundreds,int tens,int ones){
+    mydigs.clear();
+    vector<int> vals;
+    vals.push_back(hundreds);
+    vals.push_back(tens);
+    vals.push_back(ones);
+    vector<int> valid[10];
+
+    int arr1[]={0,1,2,3,4,7,8,9};
+    int arr2[]={0,2,3,5,6,7,8,9};
+    int arr3[]={0,4,5,6,8,9};
+    int arr4[]={0,2,6,8};
+    int arr5[]={0,2,3,5,6,8,9};
+    int arr6[]={0,1,3,4,5,6,7,8,9};
+    int arr7[]={2,3,4,5,6,8,9};
+
+    valid[1].insert(valid[1].end(), arr1, arr1+(sizeof(arr1)/sizeof(arr1[0])));
+    valid[2].insert(valid[2].end(), arr2, arr2+(sizeof(arr2)/sizeof(arr2[0])));    
+    valid[3].insert(valid[3].end(), arr3, arr3+(sizeof(arr3)/sizeof(arr3[0])));
+    valid[4].insert(valid[4].end(), arr4, arr4+(sizeof(arr4)/sizeof(arr4[0])));     
+    valid[5].insert(valid[5].end(), arr5, arr5+(sizeof(arr5)/sizeof(arr5[0])));     
+    valid[6].insert(valid[6].end(), arr6, arr6+(sizeof(arr6)/sizeof(arr6[0])));     
+    valid[7].insert(valid[7].end(), arr7, arr7+(sizeof(arr7)/sizeof(arr7[0])));     
+         
+         
+    for(int i=0;i<vals.size();i++)
+    {
+        int xoffset = 50*i;
+        int yoffset = -150;
+        int myvalue = vals[i];
+        for(int j=1;j<=7;j++)
+            {
+                for(int k=0;k<valid[j].size();k++){
+                    if(valid[j][k] == myvalue and j == 1)
+                        mydigs.push_back(Score(xoffset+10,yoffset+10,90));
+                        
+                    if(valid[j][k] == myvalue and j == 2)
+                        mydigs.push_back(Score(xoffset,yoffset+20,0));
+                        
+                    if(valid[j][k] == myvalue and j == 3)
+                        mydigs.push_back(Score(xoffset-10,yoffset+10,90));
+                        
+                    if(valid[j][k] == myvalue and j == 4)
+                        mydigs.push_back(Score(xoffset-10,yoffset-10,90));
+                        
+                    if(valid[j][k] == myvalue and j == 5)
+                        mydigs.push_back(Score(xoffset,yoffset-20,0));
+                        
+                    if(valid[j][k] == myvalue and j == 6)
+                        mydigs.push_back(Score(xoffset+10,yoffset-10,90));
+                        
+                    if(valid[j][k] == myvalue and j == 7)
+                        mydigs.push_back(Score(xoffset,yoffset,0));
+                }   
+            }
+    }
+}
+
 void tick_elements() {
+    if(score<0)
+        score=0;
+    int hundreds = (score/100)%10;
+    int tens = (score/10)%10;
+    int ones = (score/1)%10;
+
+    render_score(hundreds,tens,ones);
     //camera_rotation_angle += 1;
     if(magapp.processTick())
     {
@@ -136,14 +221,13 @@ void tick_elements() {
 
         if(magnet.position.y - ball1.position.y > 0)
         {
-            ball1.speedy = 0.0;
+            ball1.speedy += 0.3;
             ball1.position.y += 5;
         }
 
         if(magnet.position.y - ball1.position.y < 0)
         {
-
-            ball1.speedy = 0.0;
+            ball1.speedy -= 0.1;
             ball1.position.y -= 5;
         }  
     }
@@ -160,6 +244,12 @@ void tick_elements() {
     for(int i=0;i<myboomerangs.size();i++)
         myboomerangs[i].tick();
     
+    for(int i=0;i<mybonus.size();i++)
+        mybonus[i].tick();
+    
+    for(int i=0;i<mysemi.size();i++)
+        mysemi[i].tick();
+    
     for(int i=0;i<mypairbeams.size();i++)
     {
         mypairbeams[i].first.tick(DOUBLE_TOP);
@@ -170,16 +260,46 @@ void tick_elements() {
     
     bounding_box_t boxplayer = ball1.box;
     
+    for(int i = 0; i < mysemi.size(); i++)
+    {
+        bounding_box_t boxsemi = mysemi[i].box;
+        if(boxsemi.x>=750)
+            continue;
+
+        for(int j = 0 ; j < mybeams.size();j++)
+        {
+            bounding_box_t boxbeams = mybeams[j].box;
+            if(detect_collision(boxsemi,boxbeams))
+                mybeams.erase(mybeams.begin()+j);
+        }
+        for(int j = 0; j < mypairbeams.size(); j++)
+        {
+            bounding_box_t boxbeam1 = mypairbeams[j].first.box;
+            bounding_box_t boxbeam2 = mypairbeams[j].second.box;
+            if(detect_collision(boxsemi,boxbeam1) or detect_collision(boxsemi,boxbeam2))
+                mypairbeams.erase(mypairbeams.begin()+j);
+        }
+        for(int j = 0; j < myboomerangs.size(); j++)
+        {
+          bounding_box_t boxboomerang = myboomerangs[j].box;
+            if(detect_collision(boxsemi,boxboomerang))
+                myboomerangs.erase(myboomerangs.begin()+j);    
+        }
+
+    }
+
     for(int i = 0; i < mycoins.size(); i++)
     {
         bounding_box_t boxcoin = mycoins[i].box;
         if(detect_collision(boxplayer,boxcoin))
         {
-            printf("collide\n");
-            printf("x position ball %f\n", ball1.position.x);
-            printf("y position ball %f\n", ball1.position.y);
-            printf("x position ball %f\n", mycoins[i].position.x);
-            printf("y position ball %f\n", mycoins[i].position.y);
+            score += mycoins[i].score;
+            debug(score);
+            // printf("collide\n");
+            // printf("x position ball %f\n", ball1.position.x);
+            // printf("y position ball %f\n", ball1.position.y);
+            // printf("x position ball %f\n", mycoins[i].position.x);
+            // printf("y position ball %f\n", mycoins[i].position.y);
           //  usleep(100000000);
             mycoins.erase(mycoins.begin()+i);
         }
@@ -190,12 +310,14 @@ void tick_elements() {
         bounding_box_t boxbeam = mybeams[i].box;
         if(detect_collision(boxplayer,boxbeam))
         {
-            printf("collide\n");
-            printf("x position ball %f\n", ball1.position.x);
-            printf("y position ball %f\n", ball1.position.y);
-            printf("x position ball %f\n", mybeams[i].position.x);
-            printf("y position ball %f\n", mybeams[i].position.y);
+            // printf("collide\n");
+            // printf("x position ball %f\n", ball1.position.x);
+            // printf("y position ball %f\n", ball1.position.y);
+            // printf("x position ball %f\n", mybeams[i].position.x);
+            // printf("y position ball %f\n", mybeams[i].position.y);
           //  usleep(100000000);
+            score -= 1;
+            lives -= 1;
             mybeams.erase(mybeams.begin()+i);
         }
     }
@@ -206,9 +328,11 @@ void tick_elements() {
 
         if(detect_collision(boxplayer,boxbeam1) or detect_collision(boxplayer,boxbeam2))
         {
-            printf("collide\n");
-            printf("x position ball %f\n", ball1.position.x);
-            printf("y position ball %f\n", ball1.position.y);
+            // printf("collide\n");
+            // printf("x position ball %f\n", ball1.position.x);
+            // printf("y position ball %f\n", ball1.position.y);
+            score -= 2;
+            lives -= 1;
             mypairbeams.erase(mypairbeams.begin()+i);
         }
     }
@@ -218,17 +342,52 @@ void tick_elements() {
         bounding_box_t boxboomerang = myboomerangs[i].box;
         if(detect_collision(boxplayer,boxboomerang))
         {
-            printf("collide\n");
-            printf("x position ball %f\n", ball1.position.x);
-            printf("y position ball %f\n", ball1.position.y);
-            printf("x position ball %f\n", myboomerangs[i].position.x);
-            printf("y position ball %f\n", myboomerangs[i].position.y);
+            // printf("collide\n");
+            // printf("x position ball %f\n", ball1.position.x);
+            // printf("y position ball %f\n", ball1.position.y);
+            // printf("x position ball %f\n", myboomerangs[i].position.x);
+            // printf("y position ball %f\n", myboomerangs[i].position.y);
           //  usleep(100000000);
+            score -= 1;
+            lives -= 1;
             myboomerangs.erase(myboomerangs.begin()+i);
         }
         if(myboomerangs[i].position.y<0)
             myboomerangs.erase(myboomerangs.begin()+i);
     }
+    
+    for(int i = 0; i < mybonus.size(); i++)
+    {
+        bounding_box_t boxboomerang = mybonus[i].box;
+        if(detect_collision(boxplayer,boxboomerang))
+        {
+            score += mybonus[i].score;
+            lives += mybonus[i].score;
+            mybonus.erase(mybonus.begin()+i);
+        }
+        if(mybonus[i].position.y<0)
+            mybonus.erase(mybonus.begin()+i);
+    }
+
+    for(int i = 0; i < mysemi.size(); i++)
+    {
+        bounding_box_t boxsemi = mysemi[i].box;        
+        if(detect_collision(boxplayer,boxsemi)){
+                ball1.speedy = 0;
+                ball1.position.x -=2;
+                float x = ball1.position.x;
+                float h = boxsemi.x;
+                float y = ball1.position.y;
+                float k = boxsemi.y;
+                float r = mysemi[i].radius - 30.0;
+                y = (pow(double(r*r - (x-h)*(x-h)),0.500))+k; 
+                if(isnan(y))
+                    y = ball1.position.y;
+                debug(y);
+                ball1.position.y = y;
+            }
+    }
+    
 
     for(int i = 0; i < mybeams.size(); i++)
     {
@@ -239,11 +398,12 @@ void tick_elements() {
             
             if(detect_collision(boxballoon,boxbeam))
             {
-                printf("collide\n");
-                printf("x position ball %f\n", ball1.position.x);
-                printf("y position ball %f\n", ball1.position.y);
-                printf("x position ball %f\n", mybeams[i].position.x);
-                printf("y position ball %f\n", mybeams[i].position.y);
+                // printf("collide\n");
+                // printf("x position ball %f\n", ball1.position.x);
+                // printf("y position ball %f\n", ball1.position.y);
+                // printf("x position ball %f\n", mybeams[i].position.x);
+                // printf("y position ball %f\n", mybeams[i].position.y);
+                score += 1;
                 mybeams.erase(mybeams.begin()+i);
                 myballoons.erase(myballoons.begin()+j);
             }
@@ -272,9 +432,9 @@ void initGL(GLFWwindow *window, int width, int height) {
     {
         Coins coin1;
         if(rand()%3>=1)
-            coin1 = Coins(500*i+rand()%25,rand()%600+100,30,COLOR_NEONGREEN);
+            coin1 = Coins(500*i+rand()%25,rand()%600+100,30,COLOR_NEONGREEN,1);
         else
-            coin1 = Coins(500*i+rand()%25,rand()%600+100,20,COLOR_SILVER);
+            coin1 = Coins(500*i+rand()%25,rand()%600+100,30,COLOR_SILVER,2);
 
         mycoins.push_back(coin1);
     }
@@ -302,6 +462,24 @@ void initGL(GLFWwindow *window, int width, int height) {
         Boomerang boom1;
         boom1 = Boomerang(500*i+rand()%25,700,COLOR_BLACK);
         myboomerangs.push_back(boom1);
+    }
+
+    for(int i=4;i<=100;i+=15)
+    {
+        Semicircle semi1 = Semicircle(500*i+rand()%25,0,200,COLOR_BLACK);
+        mysemi.push_back(semi1);
+    }
+    
+    for(int i=3;i<1000;i+=4)
+    {
+        if(rand()%2){
+            Bonus bonus1 = Bonus(500*i+rand()%25,250,20,1,COLOR_BLACK);
+            mybonus.push_back(bonus1);
+        }
+        else{
+            Bonus bonus1 = Bonus(500*i+rand()%25,200,30,2,COLOR_GOLD);
+            mybonus.push_back(bonus1);
+        }
     }
 
     
@@ -339,7 +517,7 @@ int main(int argc, char **argv) {
     window = initGLFW(width, height);
 
     initGL (window, width, height);
-
+    
     /* Draw in loop */
     while (!glfwWindowShouldClose(window)) {
         // Process timers
@@ -350,7 +528,7 @@ int main(int argc, char **argv) {
             draw();
             // Swap Frame Buffer in double buffering
             glfwSwapBuffers(window);
-
+            
             tick_elements();
             tick_input(window);
         }
@@ -365,12 +543,12 @@ int main(int argc, char **argv) {
 pair<float,float> myrotate(float angle, float x , float y,float origx,float origy)
 {
     pair <float,float> rotated_point;
-    if(f)
-    {
-        debug(angle);
-        debug(x);
-        debug(y);
-    }
+    // if(f)
+    // {
+    //     debug(angle);
+    //     debug(x);
+    //     debug(y);
+    // }
     rotated_point.first = (x-origx)*cos(angle)-(y-origy)*sin(angle)+origx;
     rotated_point.second = (x-origx)*sin(angle)+(y-origy)*cos(angle)+origy;
     return rotated_point;
@@ -413,17 +591,7 @@ pair<float,float> diff4 )
     bool d2 = line_eq(line1,line2,diff2);
     bool d3 = line_eq(line1,line2,diff3);
     bool d4 = line_eq(line1,line2,diff4);
-    // if(f)
-    // {
-    //     debug(s1);
-    //     debug(s2);
-
-    //     debug(d1);
-    //     debug(d2);
-    //     debug(d3);
-    //     debug(d4);
-    // }
-
+   
     if(s1==s2 and d1==d2 and d2==d3 and d3==d4 and s1!=d1)
         return true;
     else
@@ -444,33 +612,7 @@ bool detect_collision(bounding_box_t a, bounding_box_t b) {
     bp3 = myrotate(b.angle,b.x-(b.width/2),b.y-(b.height/2),b.x,b.y); 
     bp4 = myrotate(b.angle,b.x-(b.width/2),b.y+(b.height/2),b.x,b.y); 
 
-    if ( (abs(a.x - b.x) * 2 < (a.width + b.width)) && (abs(a.y - b.y) * 2 < (a.height + b.height)) )
-    {
-        printf("collision\n");
-    //    f=1;
-        debug(ball1.position.x);
-        debug(ball1.position.y);
-        ap1 = myrotate(a.angle,a.x+(a.width/2),a.y+(a.height/2),a.x,a.y); 
-        debug(ap1.first);
-        debug(ap1.second);
-        debug(ap2.first);
-        debug(ap2.second);
-        debug(ap3.first);
-        debug(ap3.second);
-        debug(ap4.first);
-        debug(ap4.second);
-        debug(bp1.first);
-        debug(bp1.second);
-        debug(bp2.first);
-        debug(bp2.second);
-        debug(bp3.first);
-        debug(bp3.second);
-        debug(bp4.first);
-        debug(bp4.second);
-        lines_collision(ap1,ap2,ap3,ap4,bp1,bp2,bp3,bp4);
-       // usleep(1000000000);
-    }   
-
+    
     if(lines_collision(ap1,ap2,ap3,ap4,bp1,bp2,bp3,bp4))
         return false;    
     
@@ -517,6 +659,7 @@ bool detect_collision(bounding_box_t a, bounding_box_t b) {
         // debug(bp4.second);
         // lines_collision(ap1,ap2,ap3,ap4,bp1,bp2,bp3,bp4);
         // usleep(1000000000);
+    //debug(score);
     return true;
     
 }
