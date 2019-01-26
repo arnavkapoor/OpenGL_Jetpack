@@ -23,7 +23,7 @@ How To Play:
     make all
     ./jetpac_v1
 ```
->- aroow keys are used  for jump, left,and right.
+>- arrow keys are used  for jump, left,and right.
 >- press 'q' to quit.
 >- press 'space' to throw balloons.
 
