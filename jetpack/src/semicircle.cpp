@@ -9,14 +9,14 @@ Semicircle::Semicircle(float x, float y, float radius,color_t color) {
     bounding_box_t box_cover;
     
     box_cover.x = x;
-    box_cover.y = y;
+    box_cover.y = y + radius/2;
     box_cover.width = 2*radius;
     box_cover.height = radius;
     box_cover.angle = this->rotation*M_PI/180.0f;
 
     this->box = box_cover;
     
-    int n = 200;
+    int n = 300;
     float deg = (360.0/n)*(M_PI/180);
 	
     GLfloat g_vertex_buffer_data1[(9*n)/2];

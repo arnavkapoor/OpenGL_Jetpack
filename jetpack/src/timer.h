@@ -14,4 +14,5 @@ private:
     double prev;
 };
 
+
 #endif // TIMER_H

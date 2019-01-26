@@ -44,11 +44,12 @@ void Boomerang::set_position(float x, float y) {
 }
 
 void Boomerang::tick() {
-
+    
     if(this->position.x <= 750.0f)
     {
         this->position.y -= 4;
         this->position.x = (this->position.y - 350)*(this->position.y-350)*(1/4.0)*(1/40.83)-350;
+        this->rotation += 5;
     }
     else
         this->position.x -= 3;
